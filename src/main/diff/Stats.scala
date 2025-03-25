@@ -1,14 +1,19 @@
 package diff
 
-/**
- * Represents statistics for the whole comparison between two datasets.
- * @param numTotal total number of rows for each dataset
- * @param numSame number of rows which are the same for the two datasets
- * @param numDiff number of rows which are different in the two datasets
- * @param numMissingLHS number of rows which are missing in the left dataset
- * @param numMissingRHS number of rows which are missing in the right dataset
- * @param numIncomparable number of rows which were not comparable
- */
+/** Represents statistics for the whole comparison between two datasets.
+  * @param numTotal
+  *   total number of rows for each dataset
+  * @param numSame
+  *   number of rows which are the same for the two datasets
+  * @param numDiff
+  *   number of rows which are different in the two datasets
+  * @param numMissingLHS
+  *   number of rows which are missing in the left dataset
+  * @param numMissingRHS
+  *   number of rows which are missing in the right dataset
+  * @param numIncomparable
+  *   number of rows which were not comparable
+  */
 final case class GlobalStats(
     numTotal: Long,
     numSame: Long,
@@ -18,18 +23,26 @@ final case class GlobalStats(
     numIncomparable: Long
 )
 
-/**
- * Represents different statistics for the distribution of the detlas for a field.
- * @param deltaType type of delta which was computed either numeric or string-based (Levenshtein distance)
- * @param min minimum delta value
- * @param max maximum delta value
- * @param count number of deltas these statistics were aggregated over
- * @param mean first moment for the deltas
- * @param variance second moment for the deltas
- * @param stddev square root of the second moment for the deltas
- * @param skewness third moment for the deltas
- * @param kurtosis fourth moment for the deltas
- */
+/** Represents different statistics for the distribution of the detlas for a field.
+  * @param deltaType
+  *   type of delta which was computed either numeric or string-based (Levenshtein distance)
+  * @param min
+  *   minimum delta value
+  * @param max
+  *   maximum delta value
+  * @param count
+  *   number of deltas these statistics were aggregated over
+  * @param mean
+  *   first moment for the deltas
+  * @param variance
+  *   second moment for the deltas
+  * @param stddev
+  *   square root of the second moment for the deltas
+  * @param skewness
+  *   third moment for the deltas
+  * @param kurtosis
+  *   fourth moment for the deltas
+  */
 final case class DeltaStats(
     deltaType: String,
     min: Double,
@@ -42,13 +55,16 @@ final case class DeltaStats(
     kurtosis: Double
 )
 
-/**
- * Represents the statistics for a particular field.
- * @param fieldName name of the field these deltas were computed over
- * @param count number of different values for this field
- * @param fraction number of different values for this field over the total number of different rows
- * @param deltaStats statistics for the computed deltas
- */
+/** Represents the statistics for a particular field.
+  * @param fieldName
+  *   name of the field these deltas were computed over
+  * @param count
+  *   number of different values for this field
+  * @param fraction
+  *   number of different values for this field over the total number of different rows
+  * @param deltaStats
+  *   statistics for the computed deltas
+  */
 final case class FieldStats(
     fieldName: String,
     count: Long,
@@ -56,23 +72,30 @@ final case class FieldStats(
     deltaStats: Option[DeltaStats]
 )
 
-/**
- * Represents the computed statistics.
- * @param global statistics on the whole comparison
- * @param fields statistics by field
- */
+/** Represents the computed statistics.
+  * @param global
+  *   statistics on the whole comparison
+  * @param fields
+  *   statistics by field
+  */
 final case class Stats(global: GlobalStats, fields: List[FieldStats])
 
-/**
- * Represents the outputted global statistics as they are on Hive.
- * @param tableName name of the table compared
- * @param numTotal total number of rows between the two tables
- * @param numSame number of rows which are the same between the two tables
- * @param numDiff number of rows which are different between the two tables
- * @param numMissingLHS number of rows for which a primary key matches no records on the left side
- * @param numMissingRHS number of rows for which a primary key matches no records on the right side
- * @param numIncomparable number of rows which are not comparable due to an issue
- */
+/** Represents the outputted global statistics as they are on Hive.
+  * @param tableName
+  *   name of the table compared
+  * @param numTotal
+  *   total number of rows between the two tables
+  * @param numSame
+  *   number of rows which are the same between the two tables
+  * @param numDiff
+  *   number of rows which are different between the two tables
+  * @param numMissingLHS
+  *   number of rows for which a primary key matches no records on the left side
+  * @param numMissingRHS
+  *   number of rows for which a primary key matches no records on the right side
+  * @param numIncomparable
+  *   number of rows which are not comparable due to an issue
+  */
 final case class OutputGlobalStats(
     tableName: String,
     numTotal: Long,
@@ -84,12 +107,14 @@ final case class OutputGlobalStats(
 )
 object OutputGlobalStats {
 
-  /**
-   * Builds the output global statistics from global stats.
-   * @param tableName name of the table compared
-   * @param global statistics
-   * @return global statistics ready to be written into Hive
-   */
+  /** Builds the output global statistics from global stats.
+    * @param tableName
+    *   name of the table compared
+    * @param global
+    *   statistics
+    * @return
+    *   global statistics ready to be written into Hive
+    */
   def apply(tableName: String, global: GlobalStats): OutputGlobalStats =
     OutputGlobalStats(
       tableName,
@@ -102,21 +127,33 @@ object OutputGlobalStats {
     )
 }
 
-/**
- * Represents the outputted field statistics as they are on Hive.
- * @param tableName name of the table
- * @param fieldName name of the field
- * @param diffCount number of field values which are different between the two tables
- * @param diffFraction number of field values which are different between the two tables over the total number of rows which are different
- * @param deltaType type of delta which was computed to compare values
- * @param deltaMin minimum value of the deltas
- * @param deltaMax maximum value of the deltas
- * @param deltaMean first moment
- * @param deltaVariance second moment
- * @param deltaStddev square root of the second moment
- * @param deltaSkewness third moment
- * @param deltaKurtosis fourth moment
- */
+/** Represents the outputted field statistics as they are on Hive.
+  * @param tableName
+  *   name of the table
+  * @param fieldName
+  *   name of the field
+  * @param diffCount
+  *   number of field values which are different between the two tables
+  * @param diffFraction
+  *   number of field values which are different between the two tables over the total number of rows which are
+  *   different
+  * @param deltaType
+  *   type of delta which was computed to compare values
+  * @param deltaMin
+  *   minimum value of the deltas
+  * @param deltaMax
+  *   maximum value of the deltas
+  * @param deltaMean
+  *   first moment
+  * @param deltaVariance
+  *   second moment
+  * @param deltaStddev
+  *   square root of the second moment
+  * @param deltaSkewness
+  *   third moment
+  * @param deltaKurtosis
+  *   fourth moment
+  */
 final case class OutputFieldStats(
     tableName: String,
     fieldName: String,
@@ -133,12 +170,14 @@ final case class OutputFieldStats(
 )
 object OutputFieldStats {
 
-  /**
-   * Builds the output field statistics from field stats.
-   * @param tableName name of the table
-   * @param field statistics
-   * @return field statistics ready to be written into Hive
-   */
+  /** Builds the output field statistics from field stats.
+    * @param tableName
+    *   name of the table
+    * @param field
+    *   statistics
+    * @return
+    *   field statistics ready to be written into Hive
+    */
   def apply(tableName: String, field: FieldStats): OutputFieldStats =
     OutputFieldStats(
       tableName,
@@ -155,4 +194,3 @@ object OutputFieldStats {
       field.deltaStats.map(_.kurtosis)
     )
 }
-
