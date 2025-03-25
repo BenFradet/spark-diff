@@ -114,7 +114,7 @@ class AlgebirdRDD[T](val rdd: RDD[T]) extends AnyVal {
    */
   def sumOption(implicit sg: Semigroup[T], ct: ClassTag[T]): Option[T] = {
     val partialReduce: RDD[T] =
-      rdd.mapPartitions(itT => sg.sumOption(itT).toIterator, preservesPartitioning = true)
+      rdd.mapPartitions(itT => sg.sumOption(itT).iterator, preservesPartitioning = true)
 
     // my reading of the docs is that we do want a shuffle at this stage to
     // to make sure the upstream work is done in parallel.
