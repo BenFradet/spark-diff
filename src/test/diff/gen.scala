@@ -7,6 +7,8 @@ import org.apache.spark.sql.types._
 import org.scalacheck.{Arbitrary, Gen}
 
 import types.MapVal
+import org.apache.spark.sql.catalyst.expressions.GenericRowWithSchema
+import org.apache.spark.sql.Row
 
 object gen {
   val nonEmptyAlphaStrGen: Gen[String] = Gen.nonEmptyListOf(Gen.alphaChar).map(_.mkString)
@@ -97,4 +99,44 @@ object gen {
       name <- nonEmptyAlphaStrGen
       dt   <- simpleDataTypeGen
     } yield (StructField(name, dt._1), dt._2)
+
+  // we don't generate map data types because columns with this type are not hashable so drop
+  // duplicates won't work
+  val complexDataTypeGen: Gen[(DataType, Gen[Any])] =
+    for {
+      (dt, g) <- simpleDataTypeGen
+      d = (ArrayType(dt, true), Gen.listOfN(20, g).map(_.toArray))
+    } yield d
+
+  // we don't bother with nested struct types as we don't have them
+  val structFieldGen: Gen[(StructField, Gen[Any])] =
+    for {
+      name <- nonEmptyAlphaStrGen
+      dt <- Gen.frequency((9, simpleDataTypeGen), (1, complexDataTypeGen))
+    } yield (StructField(name, dt._1), dt._2)
+
+  implicit val structFieldArb: Arbitrary[List[StructField]] =
+    Arbitrary(Gen.nonEmptyListOf(structFieldGen.map(_._1)))
+
+  def normalizeFieldName(tuple: (StructField, Gen[Any])): (StructField, Gen[Any]) = tuple match {
+    case ((sf, g)) => (sf.copy(name = sf.name.toLowerCase()), g)
+  }
+
+  def structTypeGen(structFieldGen: Gen[(StructField, Gen[Any])]): Gen[(StructType, Gen[Row])] =
+    for {
+      l <- Gen.nonEmptyListOf(structFieldGen).map {
+        _.take(20)
+          .map(normalizeFieldName)
+          .groupBy(_._1.name)
+          .map(_._2.head) // filter out any duplicate column names
+          .toMap
+      }
+      st = StructType(l.keys.toSeq)
+    } yield (st, Gen.sequence[Array[Any], Any](l.values).map(new GenericRowWithSchema(_, st)))
+
+  implicit val structTypeArb: Arbitrary[(StructType, Gen[Row])] = Arbitrary(
+    structTypeGen(structFieldGen)
+  )
+
+  implicit val rowArb: Arbitrary[Row] = Arbitrary(structTypeGen(structFieldGen).flatMap(_._2))
 }
