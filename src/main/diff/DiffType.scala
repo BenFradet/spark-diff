@@ -1,8 +1,11 @@
 package diff
 
+import cats.Show
+
 /** Represents the type of difference between two Spark Rows. */
 sealed trait DiffType
 object DiffType {
+  implicit val showDiffType: Show[DiffType] = Show.fromToString
 
   /** When two Rows are the same. */
   final case object Same extends DiffType

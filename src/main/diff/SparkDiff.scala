@@ -162,7 +162,7 @@ object SparkDiff {
       vec: (Long, Long, Long, Long, Long, Long),
       fieldMap: Map[String, MapVal]
   ): Stats = {
-    val global = GlobalStats.tupled(vec)
+    val global = (GlobalStats.apply _).tupled(vec)
     val field = fieldMap.map { case (field, (count, optD)) =>
       val deltaStats = optD.map { case (dt, min, max, m) =>
         DeltaStats(

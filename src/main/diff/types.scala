@@ -1,6 +1,6 @@
 package diff
 
-import com.twitter.algebird.{Min, Max, Moments}
+import com.twitter.algebird.{Max, Min, Moments}
 
 object types {
 

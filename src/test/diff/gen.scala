@@ -112,7 +112,7 @@ object gen {
   val structFieldGen: Gen[(StructField, Gen[Any])] =
     for {
       name <- nonEmptyAlphaStrGen
-      dt <- Gen.frequency((9, simpleDataTypeGen), (1, complexDataTypeGen))
+      dt   <- Gen.frequency((9, simpleDataTypeGen), (1, complexDataTypeGen))
     } yield (StructField(name, dt._1), dt._2)
 
   implicit val structFieldArb: Arbitrary[List[StructField]] =

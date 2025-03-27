@@ -1,5 +1,7 @@
 package diff
 
+import cats.kernel.Eq
+
 /** Represents statistics for the whole comparison between two datasets.
   * @param numTotal
   *   total number of rows for each dataset
@@ -22,6 +24,10 @@ final case class GlobalStats(
     numMissingRHS: Long,
     numIncomparable: Long
 )
+
+object GlobalStats {
+  implicit val globalStatsEq: Eq[GlobalStats] = Eq.fromUniversalEquals
+}
 
 /** Represents different statistics for the distribution of the detlas for a field.
   * @param deltaType

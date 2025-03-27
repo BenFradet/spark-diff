@@ -1,5 +1,7 @@
 package diff
 
+import cats.Show
+import cats.kernel.Eq
 import cats.instances.char._
 import cats.instances.double._
 import cats.instances.option._
@@ -23,9 +25,14 @@ import instances._
   */
 final case class DeltaInfo(keys: List[String], deltas: List[Delta], diffType: DiffType)
 
+object DeltaInfo {
+  implicit val deltaInfoEq: Eq[DeltaInfo] = Eq.fromUniversalEquals
+}
+
 /** The type of values we're computing deltas over: either numeric or string-based. */
 sealed trait DeltaType
 object DeltaType {
+  implicit val deltaTypeShow: Show[DeltaType] = Show.fromToString
 
   /** Numeric delta type. */
   final case object Numeric extends DeltaType
@@ -90,6 +97,7 @@ final case class Delta(
     deltaValue: DeltaValue
 )
 object Delta {
+  implicit val deltaShow: Show[Delta] = Show.fromToString
 
   /** Computes the deltas between two Spark rows, field by field. If the schema of the two rows is not the same a left
     * is returned. Otherwise, values are compared two by two by field name to produce a list of deltas. Booleans and
