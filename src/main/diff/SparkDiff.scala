@@ -14,7 +14,7 @@ import instances._
 import types.MapVal
 
 object SparkDiff {
-  def compareDFs[F[_]: Sync](
+  def diff[F[_]: Sync](
       lhs: DataFrame,
       rhs: DataFrame,
       compositePrimaryKeys: Set[String]
