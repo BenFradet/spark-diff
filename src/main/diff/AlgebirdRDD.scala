@@ -113,7 +113,6 @@ class AlgebirdRDD[T](val rdd: RDD[T]) extends AnyVal {
       .mapPartitions(it => Iterator(sg.sumOption(it)), preservesPartitioning = true)
       .collect()
 
-    assert(results.size == 1, s"Should only be 1 item: ${results.toList}")
-    results.head // there can only be one item now
+    results.headOption.flatten // there can only be one item now
   }
 }

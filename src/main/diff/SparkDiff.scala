@@ -18,12 +18,12 @@ object SparkDiff {
       lhs: DataFrame,
       rhs: DataFrame,
       compositePrimaryKeys: Set[String]
-  ): F[Option[Stats]] =
+  ): F[Either[String, Stats]] =
     for {
       deltas <- computeDeltas(lhs, rhs, compositePrimaryKeys)
       stats <- deltas match {
-        case Left(_)   => None.pure[F]
-        case Right(ds) => computeStats(ds)
+        case Right(ds) => computeStats(ds).map(o => o.toRight("no elements"))
+        case Left(o) => Left(o).pure[F]
       }
     } yield stats
 
