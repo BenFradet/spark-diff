@@ -14,7 +14,7 @@ object Dependencies {
 object Versions {
   val Algebird   = "0.13.10"
   val Cats       = "2.13.0"
-  val CatsEffect = "3.6.0"
+  val CatsEffect = "3.6.1"
   val Spark      = "3.5.5"
   val Weaver     = "0.8.4"
 }
