@@ -28,7 +28,7 @@ object ProgramSpec extends SimpleIOSuite with Checkers {
       res match {
         case DeltaInfo(keys, l, DiffType.Different) => expect(l.nonEmpty)
         case DeltaInfo(keys, Nil, DiffType.Same)    => expect.eql(r1.toSeq, r2.toSeq)
-        case _ =>
+        case _                                      =>
           failure(s"DeltaInfo should be DeltaInfo($keys, list, DiffType.Different), got $res")
       }
     }
@@ -41,7 +41,7 @@ object ProgramSpec extends SimpleIOSuite with Checkers {
       val res    = getDeltaInfo(keys, values)
       res match {
         case DeltaInfo(keys, Nil, _: DiffType.Incomparable) => success
-        case _ =>
+        case _                                              =>
           failure(s"DeltaInfo should be DeltaInfo($keys, Nil, DiffType.Incomparable), got $res")
       }
     }
@@ -80,7 +80,7 @@ object ProgramSpec extends SimpleIOSuite with Checkers {
     forall { (keys: List[String], vs: (Row, Row, Row)) =>
       val values = List(("a", vs._1), ("b", vs._2), ("c", vs._3))
       val res    = getDeltaInfo(keys, values)
-      val msg =
+      val msg    =
         s"More than 2 values found for key: ${keys.mkString(", ")}, it should be a primary key"
       expect.eql(DeltaInfo(keys, Nil, DiffType.Incomparable(msg)), res)
     }

@@ -21,9 +21,9 @@ object SparkDiff {
   ): F[Either[String, Stats]] =
     for {
       deltas <- computeDeltas(lhs, rhs, compositePrimaryKeys)
-      stats <- deltas match {
+      stats  <- deltas match {
         case Right(ds) => computeStats(ds).map(o => o.toRight("no elements"))
-        case Left(o) => Left(o).pure[F]
+        case Left(o)   => Left(o).pure[F]
       }
     } yield stats
 
@@ -48,8 +48,8 @@ object SparkDiff {
       lSchema <- lhs.schema.pure[F]
       rSchema <- rhs.schema.pure[F]
       kFn = keyFn(compositePrimaryKeys)
-      lRDD <- Sync[F].delay(lhs.rdd.map(r => (kFn(r), ("l", r))))
-      rRDD <- Sync[F].delay(rhs.rdd.map(r => (kFn(r), ("r", r))))
+      lRDD   <- Sync[F].delay(lhs.rdd.map(r => (kFn(r), ("l", r))))
+      rRDD   <- Sync[F].delay(rhs.rdd.map(r => (kFn(r), ("r", r))))
       deltas <- Sync[F].delay {
         (lRDD ++ rRDD)
           .groupByKey()
@@ -103,7 +103,7 @@ object SparkDiff {
         (map.get("l"), map.get("r")) match {
           case (Some(l), Some(r)) =>
             Delta.diff(l, r) match {
-              case Left(a) => DeltaInfo(keys, Nil, DiffType.Incomparable(a))
+              case Left(a)   => DeltaInfo(keys, Nil, DiffType.Incomparable(a))
               case Right(ds) =>
                 val diffType = if (ds.isEmpty) DiffType.Same else DiffType.Different
                 DeltaInfo(keys, ds, diffType)
@@ -133,7 +133,7 @@ object SparkDiff {
     val m = ds.foldLeft(Map.empty[String, MapVal]) { case (acc, d) =>
       val optDelta = d.deltaValue match {
         case _: DeltaValue.UnsupportedDelta => None
-        case DeltaValue.TypedDelta(t, v) =>
+        case DeltaValue.TypedDelta(t, v)    =>
           Some((t, Min(v), Max(v), Moments.aggregator.prepare(v)))
       }
       acc.+((d.fieldName, (1L, optDelta)))
@@ -163,7 +163,7 @@ object SparkDiff {
       fieldMap: Map[String, MapVal]
   ): Stats = {
     val global = (GlobalStats.apply _).tupled(vec)
-    val field = fieldMap.map { case (field, (count, optD)) =>
+    val field  = fieldMap.map { case (field, (count, optD)) =>
       val deltaStats = optD.map { case (dt, min, max, m) =>
         DeltaStats(
           deltaType = dt.toString(),

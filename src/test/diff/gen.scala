@@ -47,7 +47,7 @@ object gen {
   implicit val diffTypeArb: Arbitrary[DiffType] = Arbitrary {
     for {
       msg <- Gen.alphaLowerStr
-      dt <- Gen.oneOf(
+      dt  <- Gen.oneOf(
         DiffType.Same,
         DiffType.Different,
         DiffType.MissingLHS,
