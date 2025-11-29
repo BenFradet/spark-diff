@@ -55,12 +55,11 @@ object SparkDiff {
           .groupByKey()
           .map { case (keys, values) => getDeltaInfo(keys, values.toList) }
       }
-    } yield
-      (if (lSchema === rSchema) {
-         deltas.asRight
-       } else {
-         s"LHS (${lSchema.treeString}) and RHS (${rSchema.treeString}) don't have the same schema".asLeft
-       })
+    } yield (if (lSchema === rSchema) {
+               deltas.asRight
+             } else {
+               s"LHS (${lSchema.treeString}) and RHS (${rSchema.treeString}) don't have the same schema".asLeft
+             })
 
   /** Computes statistics based on previously computed delta information. Statistics are first initialized on a per row
     * basis and then summed over
