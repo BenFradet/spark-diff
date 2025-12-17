@@ -15,6 +15,6 @@ object Versions {
   val Algebird   = "0.13.10"
   val Cats       = "2.13.0"
   val CatsEffect = "3.6.3"
-  val Spark      = "4.0.1"
+  val Spark      = "4.1.0"
   val Weaver     = "0.11.3"
 }
