@@ -20,6 +20,6 @@ jobs:
           java-version: '21'
           cache: 'sbt'
       - name: Setup sbt launcher
-        uses: sbt/setup-sbt@v1
+        uses: sbt/setup-sbt@v1.5.5
       - name: ✅ Run test
         run: sbt test
